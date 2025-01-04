@@ -1,0 +1,9 @@
+
+src/DesktopPlusWinRT/DesktopPlusWinRT.vcxproj
+src/DesktopPlusUI/DesktopPlusUI.vcxproj
+src/DesktopPlus/DesktopPlus.vcxproj
+src/DesktopPlus/DesktopPlus.vcxproj
+src/DesktopPlusUI/DesktopPlusUI.vcxproj
+/src/DesktopPlus/DesktopPlus.vcxproj
+/src/DesktopPlusUI/DesktopPlusUI.vcxproj
+/src/DesktopPlusWinRT/DesktopPlusWinRT.vcxproj
