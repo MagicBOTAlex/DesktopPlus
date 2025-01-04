@@ -1490,7 +1490,7 @@ Matrix4& FloatingWindow::GetTransform()
 }
 
 void FloatingWindow::SetTransform(const Matrix4& transform)
-{
+{       
     m_OverlayStateCurrent->Transform = transform;
 
     //Store last absolute transform
@@ -1530,7 +1530,7 @@ void FloatingWindow::RebaseTransform()
 
     vr::VROverlay()->GetOverlayTransformAbsolute(GetOverlayHandle(), &universe_origin, &hmd_mat);
     Matrix4 mat_abs = hmd_mat;
-    Matrix4 mat_origin_inverse = UIManager::Get()->GetOverlayDragger().GetBaseOffsetMatrix(ovrl_origin_dplus_tab);
+    Matrix4 mat_origin_inverse = Matrix4();
 
     mat_origin_inverse.invert();
     m_OverlayStateCurrent->Transform = mat_origin_inverse * mat_abs;

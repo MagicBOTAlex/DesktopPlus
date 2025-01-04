@@ -46,6 +46,8 @@ class OverlayDragger
         Matrix4 GetBaseOffsetMatrix(OverlayOrigin overlay_origin, const OverlayOriginConfig& origin_config);
         void ApplyDashboardScale(Matrix4& matrix);
 
+        Matrix4 SnapRotation(const Matrix4& mat, const float degrees);
+
         void DragStart(unsigned int overlay_id);
         void DragStart(vr::VROverlayHandle_t overlay_handle, OverlayOrigin overlay_origin = ovrl_origin_room); //Not recommended to use with origins that have config values
         void DragUpdate();

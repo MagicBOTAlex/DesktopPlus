@@ -67,6 +67,7 @@ const char* TranslationManager::s_StringIDNames[tstr_MAX] =
     "tstr_SettingsInterfacePersistentUIWindowsStatePositionReset",
     "tstr_SettingsInterfacePersistentUIWindowsStateSize",
     "tstr_SettingsInterfacePersistentUIWindowsStateLaunchRestore",
+    "tstr_SettingsInterfaceWindowSnapping",
     "tstr_SettingsEnvironmentBackgroundColor",
     "tstr_SettingsEnvironmentBackgroundColorDispModeNever",
     "tstr_SettingsEnvironmentBackgroundColorDispModeDPlusTab",

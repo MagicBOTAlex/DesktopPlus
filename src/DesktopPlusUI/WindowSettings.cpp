@@ -857,6 +857,11 @@ void WindowSettings::UpdatePageMainCatInterface()
             ImGui::Checkbox(TranslationManager::GetString(tstr_SettingsInterfaceBlankSpaceDrag), &ConfigManager::GetRef(configid_bool_interface_blank_space_drag_enabled));
         }
 
+        if (ConfigManager::GetValue(configid_bool_interface_show_advanced_settings))
+        {
+            ImGui::Checkbox(TranslationManager::GetString(tstr_SettingsInterfaceWindowSnapping), &ConfigManager::GetRef(configid_bool_interface_window_snapping));
+        }
+
         ImGui::Unindent();
 
         if (ConfigManager::GetValue(configid_bool_interface_show_advanced_settings))

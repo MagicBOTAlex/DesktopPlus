@@ -1274,6 +1274,7 @@ vr::VROverlayHandle_t WindowKeyboard::GetOverlayHandle() const
 
 void WindowKeyboard::RebaseTransform()
 {
+
     if ( (m_OverlayStateCurrentID == floating_window_ovrl_state_room) && (!m_OverlayStateCurrent->IsPinned) )
     {
         vr::HmdMatrix34_t hmd_mat = {0};

@@ -65,6 +65,7 @@ enum TRMGRStrID
     tstr_SettingsInterfacePersistentUIWindowsStatePositionReset,
     tstr_SettingsInterfacePersistentUIWindowsStateSize,
     tstr_SettingsInterfacePersistentUIWindowsStateLaunchRestore,
+    tstr_SettingsInterfaceWindowSnapping,
     tstr_SettingsEnvironmentBackgroundColor,
     tstr_SettingsEnvironmentBackgroundColorDispModeNever,
     tstr_SettingsEnvironmentBackgroundColorDispModeDPlusTab,

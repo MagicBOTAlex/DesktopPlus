@@ -415,6 +415,58 @@ void OverlayDragger::DragStart(vr::VROverlayHandle_t overlay_handle, OverlayOrig
     DragStartBase(false);
 }
 
+Matrix4 OverlayDragger::SnapRotation(const Matrix4& mat, const float degrees) {
+    vr::HmdMatrix34_t transform = mat.toOpenVR34();
+
+    // Extract Euler angles (assuming ZYX rotation order)
+    float x = atan2(transform.m[2][1], transform.m[2][2]);
+    float y = atan2(-transform.m[2][0], sqrt(transform.m[2][1] * transform.m[2][1] + transform.m[2][2] * transform.m[2][2]));
+    float z = atan2(transform.m[1][0], transform.m[0][0]);
+
+    // Constants for conversion
+    constexpr float radToDeg = 180.0f / 3.14159265358979323846f;
+    constexpr float degToRad = 3.14159265358979323846f / 180.0f;
+
+    // Convert to degrees
+    x *= radToDeg;
+    y *= radToDeg;
+    z *= radToDeg;
+
+    // Snap angles to the nearest multiple of `degrees`
+    auto snapToNearest = [degrees](float angle) {
+        return round(angle / degrees) * degrees;
+        };
+
+    x = snapToNearest(x);
+    y = snapToNearest(y);
+    z = snapToNearest(z);
+
+    // Convert back to radians
+    x *= degToRad;
+    y *= degToRad;
+    z *= degToRad;
+
+    // Reconstruct the transformation matrix with snapped angles
+    float cx = cos(x), sx = sin(x);
+    float cy = cos(y), sy = sin(y);
+    float cz = cos(z), sz = sin(z);
+
+    // Rebuild rotation matrix
+    transform.m[0][0] = cy * cz;
+    transform.m[0][1] = -cy * sz;
+    transform.m[0][2] = sy;
+    transform.m[1][0] = sx * sy * cz + cx * sz;
+    transform.m[1][1] = -sx * sy * sz + cx * cz;
+    transform.m[1][2] = -sx * cy;
+    transform.m[2][0] = -cx * sy * cz + sx * sz;
+    transform.m[2][1] = cx * sy * sz + sx * cz;
+    transform.m[2][2] = cx * cy;
+
+    // Ensure the returned matrix is orthogonal (optional check can be added)
+    return Matrix4(transform);
+}
+
+
 void OverlayDragger::DragUpdate()
 {
     vr::TrackedDevicePose_t poses[vr::k_unMaxTrackedDeviceCount];
@@ -450,6 +502,7 @@ void OverlayDragger::DragUpdate()
             matrix_source_current = matrix_source_current * matrix_source_start_inverse;
 
             m_DragModeMatrixTargetCurrent = matrix_source_current * matrix_target_new;
+            m_DragModeMatrixTargetCurrent = OverlayDragger::SnapRotation(m_DragModeMatrixTargetCurrent, 25);
 
             //Apply drag settings if managed overlay (while most would work on UI overlays, they're more of a hindrance most of the time)
             if (m_DragModeOverlayID != k_ulOverlayID_None)
