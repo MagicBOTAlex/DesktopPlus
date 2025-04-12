@@ -2357,39 +2357,6 @@ float OutputManager::GetDesktopHDRWhiteLevelAdjustment(int desktop_id, bool is_f
                 bool is_8bit = true;
                 ULONG sdr_white_level = 1000;
 
-                #if (NTDDI_VERSION >= NTDDI_WIN11_GA)
-                    DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO_2 adv_color_info_2 = {};
-                    adv_color_info_2.header.adapterId = path.targetInfo.adapterId;
-                    adv_color_info_2.header.id = path.targetInfo.id;
-                    adv_color_info_2.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_ADVANCED_COLOR_INFO_2;
-                    adv_color_info_2.header.size = sizeof(adv_color_info_2);
-
-                    result = ::DisplayConfigGetDeviceInfo(&adv_color_info_2.header);
-
-                    if (result == ERROR_SUCCESS)
-                    {
-                        is_8bit = (adv_color_info_2.bitsPerColorChannel == 8);
-                        //DISPLAYCONFIG_ADVANCED_COLOR_MODE_WCG is still higher bit-depth but seems like it needs to be handled differently
-                        is_hdr_enabled = (adv_color_info_2.activeColorMode == DISPLAYCONFIG_ADVANCED_COLOR_MODE_HDR);
-                    }
-
-                    if (is_hdr_enabled)
-                    {
-                        DISPLAYCONFIG_SDR_WHITE_LEVEL config_sdr_white_level = {};
-                        config_sdr_white_level.header.adapterId = path.targetInfo.adapterId;
-                        config_sdr_white_level.header.id = path.targetInfo.id;
-                        config_sdr_white_level.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_SDR_WHITE_LEVEL;
-                        config_sdr_white_level.header.size = sizeof(sdr_white_level);
-
-                        result = ::DisplayConfigGetDeviceInfo(&config_sdr_white_level.header);
-
-                        if (result == ERROR_SUCCESS)
-                        {
-                            sdr_white_level = config_sdr_white_level.SDRWhiteLevel;
-                        }
-                    }
-                #endif
-
                 DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO adv_color_info = {};
                 adv_color_info.header.adapterId = path.targetInfo.adapterId;
                 adv_color_info.header.id = path.targetInfo.id;
