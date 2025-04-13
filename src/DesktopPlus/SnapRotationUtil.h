@@ -2,63 +2,51 @@
 #include <Util.h>
 
 /// <summary>
-/// Snaps the matrix to the closest angle
+/// Snaps the matrix to the closest angle on selected axes.
 /// </summary>
-/// <param name="degrees">Degree interval</param>
-/// <returns>The snapped matrix</returns>
-inline void SnapMatrix(Matrix4* mat, const float degrees) {
+/// <param name="mat">Pointer to the matrix to be snapped.</param>
+/// <param name="degrees">Degree interval for snapping.</param>
+/// <param name="snapX">If true, snap the rotation about the X-axis.</param>
+/// <param name="snapY">If true, snap the rotation about the Y-axis.</param>
+/// <param name="snapZ">If true, snap the rotation about the Z-axis.</param>
+/// <returns>The snapped matrix (modified in place).</returns>
+inline void SnapMatrix(Matrix4* mat, const float degrees, bool snapX, bool snapY, bool snapZ) {
     // Convert to the 3x4 matrix.
     vr::HmdMatrix34_t transform = mat->toOpenVR34();
     Vector3 translation = mat->getTranslation();
 
-    // Clamp the values that will be used as input to asin and atan2
-    // For pitch extraction, we need to make sure transform.m[1][2] stays in [-1, 1]
+    // Clamp the values that will be used as input to asin and atan2.
     float clamped_m12 = clamp(transform.m[1][2], -1.0f, 1.0f);
-    // For yaw extraction, we'll clamp transform.m[0][2]
     float clamped_m02 = clamp(transform.m[0][2], -1.0f, 1.0f);
 
-    // Extract Euler angles (assuming ZYX rotation order)
-    // Compute the pitch (rotation about the X-axis)
-    float x = std::asin(-clamped_m12);
+    // Extract Euler angles (assuming ZYX rotation order).
+    float x = std::asin(-clamped_m12);                      // Pitch: rotation about the X-axis.
+    float z = std::atan2(transform.m[1][0], transform.m[1][1]); // Roll: rotation about the Z-axis.
+    float y = std::atan2(clamped_m02, transform.m[2][2]);     // Yaw: rotation about the Y-axis.
 
-    // Compute the roll (rotation about the Z-axis)
-    float z = std::atan2(transform.m[1][0], transform.m[1][1]);
-
-    // Compute the yaw (rotation about the Y-axis) using the clamped value
-    float y = std::atan2(clamped_m02, transform.m[2][2]);
-
-    // Constants for converting between radians and degrees.
+    // Convert radians to degrees.
     constexpr float radToDeg = 180.0f / 3.14159265358979323846f;
     constexpr float degToRad = 3.14159265358979323846f / 180.0f;
-
-    // Convert to degrees.
     x *= radToDeg;
     y *= radToDeg;
     z *= radToDeg;
 
-    //// Print original Euler angles.
-    //char buffer[256];
-    //sprintf_s(buffer, "Euler Angles: x = %.1f, y = %.1f, z = %.1f\n", x, y, z);
-    //OutputDebugStringA(buffer);
-
-    // Snap angles to the nearest multiple of 'degrees'
+    // Define a lambda to snap an angle to the nearest multiple of 'degrees'.
     auto snapToNearest = [degrees](float angle) {
         return round(angle / degrees) * degrees;
         };
 
-    x = snapToNearest(x);
-    y = snapToNearest(y);
-    z = snapToNearest(z);
-
-    //// Print snapped angles.
-    //sprintf_s(buffer, "Snapped Angles: x = %.1f, y = %.1f, z = %.1f\n", x, y, z);
-    //OutputDebugStringA(buffer);
+    // Conditionally snap the angles based on the provided parameters.
+    if (snapX) { x = snapToNearest(x); }
+    if (snapY) { y = snapToNearest(y); }
+    if (snapZ) { z = snapToNearest(z); }
 
     // Convert angles back to radians.
     x *= degToRad;
     y *= degToRad;
     z *= degToRad;
 
+    // Compute cosine and sine for each angle.
     float cy = std::cos(y);
     float sy = std::sin(y);
     float cp = std::cos(x);
@@ -66,7 +54,7 @@ inline void SnapMatrix(Matrix4* mat, const float degrees) {
     float cr = std::cos(z);
     float sr = std::sin(z);
 
-    // Fill the rotation portion of the matrix.
+    // Refill the rotation portion of the matrix.
     // Row 0
     transform.m[0][0] = cy * cr + sy * sp * sr;
     transform.m[0][1] = -cy * sr + sy * sp * cr;
@@ -85,6 +73,7 @@ inline void SnapMatrix(Matrix4* mat, const float degrees) {
     transform.m[2][2] = cy * cp;
     transform.m[2][3] = 0.0f; // Translation z (0 if not used)
 
+    // Update the matrix.
     mat->set(Matrix4(transform));
     mat->setTranslation(translation);
 }
