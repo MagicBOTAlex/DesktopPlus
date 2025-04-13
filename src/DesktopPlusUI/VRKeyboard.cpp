@@ -33,12 +33,12 @@ VRKeyboard::VRKeyboard() :
 unsigned char VRKeyboard::GetModifierFlags() const
 {
     unsigned char flags = 0;
-    if (m_KeyDown[VK_LSHIFT])   { flags |= kbd_keystate_flag_lshift_down;      }
-    if (m_KeyDown[VK_RSHIFT])   { flags |= kbd_keystate_flag_rshift_down;      }
-    if (m_KeyDown[VK_LCONTROL]) { flags |= kbd_keystate_flag_lctrl_down;       }
-    if (m_KeyDown[VK_RCONTROL]) { flags |= kbd_keystate_flag_rctrl_down;       }
-    if (m_KeyDown[VK_LMENU])    { flags |= kbd_keystate_flag_lalt_down;        }
-    if (m_KeyDown[VK_RMENU])    { flags |= kbd_keystate_flag_ralt_down;        }
+    if (m_KeyDown[VK_LSHIFT])   { flags |= kbd_keystate_flag_lshift_down; }
+    if (m_KeyDown[VK_RSHIFT])   { flags |= kbd_keystate_flag_rshift_down; }
+    if (m_KeyDown[VK_LCONTROL]) { flags |= kbd_keystate_flag_lctrl_down;  }
+    if (m_KeyDown[VK_RCONTROL]) { flags |= kbd_keystate_flag_rctrl_down;  }
+    if (m_KeyDown[VK_LMENU])    { flags |= kbd_keystate_flag_lalt_down;   }
+    if (m_KeyDown[VK_RMENU])    { flags |= (m_LayoutMetadata.HasAltGr) ? (kbd_keystate_flag_ralt_down | kbd_keystate_flag_lctrl_down) : kbd_keystate_flag_ralt_down; }
     if (m_CapsLockToggled)      { flags |= kbd_keystate_flag_capslock_toggled; }
 
     return flags;
@@ -485,7 +485,7 @@ void VRKeyboard::SetKeyDown(unsigned char keycode, bool down, bool block_modifie
 
     if (m_InputTarget != kbdtarget_desktop)
     {
-        ImGui::GetIO().AddKeyEvent(ImGui_ImplWin32_VirtualKeyToImGuiKey(keycode), down);
+        ImGui::GetIO().AddKeyEvent(ImGui_ImplWin32_KeyEventToImGuiKey(keycode, 0), down);
 
         //Get text output for current state and key
         if ((down) && (keycode != VK_BACK) && (keycode != VK_TAB))

@@ -272,7 +272,10 @@ void WindowOverlayProperties::WindowUpdate()
     //Page animation
     if (m_PageAnimationDir != 0)
     {
-        m_PageAnimationProgress += ImGui::GetIO().DeltaTime * 3.0f;
+        //Use the averaged framerate value instead of delta time for the first animation step
+        //This is to smooth over increased frame deltas that can happen when a new page needs to do initial larger computations or save/load files
+        const float progress_step = (m_PageAnimationProgress == 0.0f) ? (1.0f / ImGui::GetIO().Framerate) * 3.0f : ImGui::GetIO().DeltaTime * 3.0f;
+        m_PageAnimationProgress += progress_step;
 
         if (m_PageAnimationProgress >= 1.0f)
         {
@@ -380,7 +383,7 @@ void WindowOverlayProperties::WindowUpdate()
 
         ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.00f, 0.00f, 0.00f, 0.00f)); //This prevents child bg color being visible if there's a widget before this
 
-        if ((ImGui::BeginChild(child_str_id[child_id], child_size, false, ImGuiWindowFlags_NavFlattened)) || (m_PageAppearing == page_id)) //Process page if currently appearing
+        if ((ImGui::BeginChild(child_str_id[child_id], child_size, ImGuiChildFlags_NavFlattened)) || (m_PageAppearing == page_id)) //Process page if currently appearing
         {
             ImGui::PopStyleColor(); //ImGuiCol_ChildBg
 
@@ -439,7 +442,7 @@ void WindowOverlayProperties::OverlayPositionReset()
 void WindowOverlayProperties::UpdatePageMain()
 {
     ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.00f, 0.00f, 0.00f, 0.00f));
-    ImGui::BeginChild("OvrlPropsMainContent", ImVec2(0.00f, 0.00f), false, ImGuiWindowFlags_NavFlattened);
+    ImGui::BeginChild("OvrlPropsMainContent", ImVec2(0.00f, 0.00f), ImGuiChildFlags_NavFlattened);
     ImGui::PopStyleColor();
 
     UpdatePageMainCatPosition();
@@ -1893,7 +1896,7 @@ void WindowOverlayProperties::UpdatePagePositionChange(bool only_restore_setting
     }
 
     ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.00f, 0.00f, 0.00f, 0.00f));
-    ImGui::BeginChild("PositionChangeChild", ImVec2(0.0f, ImGui::GetContentRegionAvail().y - ImGui::GetFrameHeightWithSpacing() - style.ItemSpacing.y), false, ImGuiWindowFlags_NavFlattened);
+    ImGui::BeginChild("PositionChangeChild", ImVec2(0.0f, ImGui::GetContentRegionAvail().y - ImGui::GetFrameHeightWithSpacing() - style.ItemSpacing.y), ImGuiChildFlags_NavFlattened);
     ImGui::PopStyleColor();
 
     const float column_width_1 = ImGui::GetFrameHeightWithSpacing() * 3.0f + style.ItemInnerSpacing.x;
@@ -1932,7 +1935,7 @@ void WindowOverlayProperties::UpdatePagePositionChange(bool only_restore_setting
     ImGui::SetColumnWidth(5, column_width_1);
     ImGui::SetColumnWidth(6, column_width_2);
 
-    ImGui::PushButtonRepeat(true);
+    ImGui::PushItemFlag(ImGuiItemFlags_ButtonRepeat, true);
 
     //Row 1
     ImGui::NextColumn();
@@ -2133,7 +2136,7 @@ void WindowOverlayProperties::UpdatePagePositionChange(bool only_restore_setting
         IPCManager::Get().PostMessageToDashboardApp(ipcmsg_action, ipcact_overlay_position_adjust, packed_value);
     }
 
-    ImGui::PopButtonRepeat();
+    ImGui::PopItemFlag();   //ImGuiItemFlags_ButtonRepeat
 
     ImGui::NextColumn();
 
