@@ -156,6 +156,7 @@ public:
                                                                               //0   0  0  1
 
     void        set(const float src[16]);
+    void        set(const Matrix4 src);
     void        set(float m00, float m01, float m02, float m03, // 1st column
                     float m04, float m05, float m06, float m07, // 2nd column
                     float m08, float m09, float m10, float m11, // 3rd column
@@ -221,7 +222,7 @@ public:
     friend Vector4 operator*(const Vector4& vec, const Matrix4& m); // pre-multiplication
     friend std::ostream& operator<<(std::ostream& os, const Matrix4& m);
 
-protected:
+protected: 
 
 private:
     float       getCofactor(float m0, float m1, float m2,
@@ -708,6 +709,14 @@ inline void Matrix4::set(const float src[16])
     m[4] = src[4];  m[5] = src[5];  m[6] = src[6];  m[7] = src[7];
     m[8] = src[8];  m[9] = src[9];  m[10]= src[10]; m[11]= src[11];
     m[12]= src[12]; m[13]= src[13]; m[14]= src[14]; m[15]= src[15];
+}
+
+inline void Matrix4::set(const Matrix4 src)
+{
+    m[0] = src[0];  m[1] = src[1];  m[2] = src[2];  m[3] = src[3];
+    m[4] = src[4];  m[5] = src[5];  m[6] = src[6];  m[7] = src[7];
+    m[8] = src[8];  m[9] = src[9];  m[10] = src[10]; m[11] = src[11];
+    m[12] = src[12]; m[13] = src[13]; m[14] = src[14]; m[15] = src[15];
 }
 
 

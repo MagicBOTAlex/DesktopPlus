@@ -63,6 +63,9 @@
       <Filter>Shared</Filter>
     </ClCompile>
     <ClCompile Include="RadialFollowSmoothing.cpp" />
+    <ClCompile Include="SnapRotationUtil.h">
+      <Filter>Shared</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CommonTypes.h" />
