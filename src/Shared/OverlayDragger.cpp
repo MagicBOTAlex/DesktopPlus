@@ -10,6 +10,7 @@
 #include "InterprocessMessaging.h"
 #include "Util.h"
 #include "OpenVRExt.h"
+#include <SnapRotationUtil.h>
 
 OverlayDragger::OverlayDragger() : 
     m_DragModeDeviceID(-1),
@@ -450,6 +451,7 @@ void OverlayDragger::DragUpdate()
             matrix_source_current = matrix_source_current * matrix_source_start_inverse;
 
             m_DragModeMatrixTargetCurrent = matrix_source_current * matrix_target_new;
+            SnapMatrix(&m_DragModeMatrixTargetCurrent, 25.0f, true, false, true);
 
             //Apply drag settings if managed overlay (while most would work on UI overlays, they're more of a hindrance most of the time)
             if (m_DragModeOverlayID != k_ulOverlayID_None)
